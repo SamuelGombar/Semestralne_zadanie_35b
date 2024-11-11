@@ -1,6 +1,6 @@
 # Semestralne_zadanie_35b
 
-Cieľom tohto projektu je navrhnúť a naprogramovať senzor na detekciu prekážok. Dáta bude získavať z troch viacsegmentových laserových diaľkomerov a na základe nich navrhne odporúčaný smer pohybu. 
+Cieľom tohto semestrálneho zadania je navrhnúť a naprogramovať senzor na detekciu prekážok. Dáta bude získavať z troch viacsegmentových laserových diaľkomerov a na základe nich navrhne odporúčaný smer pohybu. 
 Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude využívať znaky v tabuľke nižšie.  
 
 <div align="center">
