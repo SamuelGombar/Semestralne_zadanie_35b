@@ -28,3 +28,5 @@ Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude v
 - Samuel Gombár (knižnica na komunikáciu s diaľkomermi)
 - Vendelín F. Skokan (knižnica na komunikáciu s displejom)
 - Michal Zborovjan (logika použitia dát na vytvorenie návrhov)
+
+#monkey
