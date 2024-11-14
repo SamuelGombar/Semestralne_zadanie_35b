@@ -23,7 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include "tdtd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
