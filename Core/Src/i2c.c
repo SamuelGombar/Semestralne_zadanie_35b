@@ -21,7 +21,13 @@
 #include "i2c.h"
 
 /* USER CODE BEGIN 0 */
+uint8_t data_recive=0;
 
+uint8_t data_recive_8=0;
+uint16_t data_recive_16=0;
+uint32_t data_recive_32=0;
+
+uint8_t data_recive_multy[3];
 /* USER CODE END 0 */
 
 /* I2C1 init function */
@@ -76,11 +82,123 @@ void MX_I2C1_Init(void)
   LL_I2C_Init(I2C1, &I2C_InitStruct);
   LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
   /* USER CODE BEGIN I2C1_Init 2 */
-
+  //TODO - please check if needed
+  LL_I2C_Enable(I2C1);
   /* USER CODE END I2C1_Init 2 */
 
 }
 
 /* USER CODE BEGIN 1 */
+
+//ロロロ Notes for Read and Write  ロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロ
+//Read Note - if reading multiple registers you set number_of_registers how much, but if reading only one you can put 0 or 1
+//Read Important note - outputs only uint32_t
+//Write Note - cant write multiple things
+//Write Important note - need to check and make sure to not write to reserved registers positions 
+//ロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロ
+
+//Read function
+uint32_t i2c_read(uint8_t slave_address, uint8_t register_address, uint8_t number_of_registers){
+	//Note
+	//Read Note - if reading multiple registers you set number_of_registers how much, but if reading only one you can put 0 or 1
+	//Read Important note - outputs only uint32_t
+	
+	data_recive=0;
+
+	if(number_of_registers == 2){
+		data_recive_16=0;
+		register_address |= 0x80;
+	}
+	if(number_of_registers == 3){
+		data_recive_32=0;
+		register_address |= 0x80;
+	}
+
+
+	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+
+
+	LL_I2C_TransmitData8(I2C1, register_address);
+	while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
+
+
+	if(number_of_registers <= 1){
+		LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
+	}
+	if(number_of_registers > 1){
+		LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, number_of_registers, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_READ);
+	}
+	while (!LL_I2C_IsActiveFlag_RXNE(I2C1)) {}
+
+
+	if(number_of_registers > 1){
+	for(int i=0; i<number_of_registers;i++){
+			while (!LL_I2C_IsActiveFlag_RXNE(I2C1)) {
+				if (LL_I2C_IsActiveFlag_STOP(I2C1)) {
+					LL_I2C_ClearFlag_STOP(I2C1);
+				}
+			}
+			data_recive_multy[i] = LL_I2C_ReceiveData8(I2C1);
+			//while (!LL_I2C_IsActiveFlag_(I2C1)) {}
+		}
+	}else{
+		data_recive = LL_I2C_ReceiveData8(I2C1);
+		while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {}
+	}
+	LL_I2C_ClearFlag_STOP(I2C1);
+
+
+	if(number_of_registers == 1){
+		data_recive_8 = data_recive;
+		return data_recive_8;
+	}
+	if(number_of_registers == 2){
+		data_recive_16 = (data_recive_multy[1] << 8) | data_recive_multy[0];
+		return data_recive_16;
+	}
+	if(number_of_registers == 3){
+		data_recive_32 = (data_recive_multy[2] << 16) | (data_recive_multy[1] << 8) | data_recive_multy[0];
+		return data_recive_32;
+	}
+	if(number_of_registers == 0){
+		return data_recive;
+	}
+}
+
+
+
+//Write function
+uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data, uint8_t number_of_registers){
+	//Note
+	//Write Note - cant write multiple things
+	//Write Important note - need to check and make sure to not write to reserved registers positions
+	
+	if(number_of_registers == 2){
+		register_address |= 0x80;
+	}
+	if(number_of_registers == 3){
+		register_address |= 0x80;
+	}
+
+
+	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 2, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+
+	LL_I2C_TransmitData8(I2C1, register_address);
+	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+
+	LL_I2C_TransmitData8(I2C1, data);
+	while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
+
+	LL_I2C_GenerateStopCondition(I2C1);
+	while (LL_I2C_IsActiveFlag_STOP(I2C1) == 0) {}
+
+	LL_I2C_ClearFlag_STOP(I2C1);
+
+	return 0;
+}
+
+
 
 /* USER CODE END 1 */
