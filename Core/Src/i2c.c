@@ -28,6 +28,7 @@ uint16_t data_recive_16=0;
 uint32_t data_recive_32=0;
 
 uint8_t data_recive_multy[3];
+
 /* USER CODE END 0 */
 
 /* I2C1 init function */
@@ -82,27 +83,25 @@ void MX_I2C1_Init(void)
   LL_I2C_Init(I2C1, &I2C_InitStruct);
   LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
   /* USER CODE BEGIN I2C1_Init 2 */
-  //TODO - please check if needed
-  LL_I2C_Enable(I2C1);
+
   /* USER CODE END I2C1_Init 2 */
 
 }
 
 /* USER CODE BEGIN 1 */
-
-//ロロロ Notes for Read and Write  ロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロ
+//ă?­ă?­ă?­ Notes for Read and Write  ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­
 //Read Note - if reading multiple registers you set number_of_registers how much, but if reading only one you can put 0 or 1
 //Read Important note - outputs only uint32_t
 //Write Note - cant write multiple things
-//Write Important note - need to check and make sure to not write to reserved registers positions 
-//ロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロロ
+//Write Important note - need to check and make sure to not write to reserved registers positions
+//ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­ă?­
 
 //Read function
 uint32_t i2c_read(uint8_t slave_address, uint8_t register_address, uint8_t number_of_registers){
 	//Note
 	//Read Note - if reading multiple registers you set number_of_registers how much, but if reading only one you can put 0 or 1
 	//Read Important note - outputs only uint32_t
-	
+
 	data_recive=0;
 
 	if(number_of_registers == 2){
@@ -173,7 +172,7 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data
 	//Note
 	//Write Note - cant write multiple things
 	//Write Important note - need to check and make sure to not write to reserved registers positions
-	
+
 	if(number_of_registers == 2){
 		register_address |= 0x80;
 	}
@@ -198,7 +197,4 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data
 
 	return 0;
 }
-
-
-
 /* USER CODE END 1 */
