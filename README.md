@@ -30,6 +30,7 @@ Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude v
 - Michal Zborovjan (logika použitia dát na vytvorenie návrhov)
 
 Diagram
+
 ![MainLogicDark drawio](https://github.com/user-attachments/assets/f496a882-7c29-4737-a0ac-92defd839e72)
 
 
