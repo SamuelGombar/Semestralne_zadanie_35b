@@ -31,7 +31,8 @@ Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude v
 
 Diagram
 
-![MainLogicDark drawio](https://github.com/user-attachments/assets/f496a882-7c29-4737-a0ac-92defd839e72)
+![MainLogicDiagram drawio](https://github.com/user-attachments/assets/3bac6d6b-7465-4ebd-8832-9660a513969b)
+
 
 
 #monkey
