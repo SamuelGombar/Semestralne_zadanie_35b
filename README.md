@@ -29,7 +29,7 @@ Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude v
 - Vendelín F. Skokan (knižnica na komunikáciu s displejom)
 - Michal Zborovjan (logika použitia dát na vytvorenie návrhov)
 
-Diagram
+## Diagram
 
 ![MainLogicDiagram drawio](https://github.com/user-attachments/assets/3bac6d6b-7465-4ebd-8832-9660a513969b)
 
