@@ -163,12 +163,13 @@ uint32_t i2c_read(uint8_t slave_address, uint8_t register_address, uint8_t numbe
 	if(number_of_registers == 0){
 		return data_recive;
 	}
+	return 0;
 }
 
 
 
 //Write function
-uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data, uint8_t number_of_registers){
+uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t* data, uint8_t number_of_registers){
 	//Note
 	//Write Note - cant write multiple things
 	//Write Important note - need to check and make sure to not write to reserved registers positions
