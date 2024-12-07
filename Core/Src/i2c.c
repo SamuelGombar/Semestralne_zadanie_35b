@@ -189,7 +189,7 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data
 
 	//pridane viacbytove zapisovanie (moze to byt takto len v cykle?)
 	for (int i = 0; i < number_of_registers; i++) {
-		LL_I2C_TransmitData8(I2C1, data);
+		LL_I2C_TransmitData8(I2C1, data[i]);
 		while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
 	}
 
