@@ -180,15 +180,18 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data
 		register_address |= 0x80;
 	}
 
-
-	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 2, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+																			//zmenene z 2
+	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, number_of_registers + 1, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
 	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
 
 	LL_I2C_TransmitData8(I2C1, register_address);
 	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
 
-	LL_I2C_TransmitData8(I2C1, data);
-	while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
+	//pridane viacbytove zapisovanie (moze to byt takto len v cykle?)
+	for (int i = 0; i < number_of_registers; i++) {
+		LL_I2C_TransmitData8(I2C1, data);
+		while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
+	}
 
 	LL_I2C_GenerateStopCondition(I2C1);
 	while (LL_I2C_IsActiveFlag_STOP(I2C1) == 0) {}
