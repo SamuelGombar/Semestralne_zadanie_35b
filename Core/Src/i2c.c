@@ -228,6 +228,66 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data
 }
 
 
+//Pseudo multy write - Consecutive addresses
+uint32_t i2c_multy_write(uint8_t slave_address, uint8_t register_address, uint8_t *data, uint8_t number_of_registers){
+	//Note
+	// It is acting like it writes multyple
+	//Write Important note - need to check and make sure to not write to reserved registers positions
+
+	if(number_of_registers == 0){
+		number_of_registers=1;
+	}
+	//Consecutive addresses
+  	for (uint8_t i=0; i<number_of_registers; i++){
+    	    LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 2, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+	    while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+	
+	    LL_I2C_TransmitData8(I2C1, register_address+i);
+	    while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+	
+	    LL_I2C_TransmitData8(I2C1, data[i]);
+	    while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
+	
+	    LL_I2C_GenerateStopCondition(I2C1);
+	    while (LL_I2C_IsActiveFlag_STOP(I2C1) == 0) {}
+	
+	    LL_I2C_ClearFlag_STOP(I2C1);
+  	}
+	return 0;
+}
+
+
+
+//Pseudo multy write - Non Consecutive addresses
+uint32_t i2c_multy_write_2(uint8_t slave_address, uint8_t *register_address, uint8_t *data, uint8_t number_of_registers){
+	//Note
+	// It is acting like it writes multyple
+	//Write Important note - need to check and make sure to not write to reserved registers positions
+
+	if(number_of_registers == 0){
+		number_of_registers=1;
+	}
+
+	  //Non Consecutive addresses
+	  for (uint8_t i=0; i<number_of_registers; i++){
+	    	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 2, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+	    	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+	
+	    	LL_I2C_TransmitData8(I2C1, register_address[i]);
+	    	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+	
+	    	LL_I2C_TransmitData8(I2C1, data[i]);
+	    	while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
+	
+	    	LL_I2C_GenerateStopCondition(I2C1);
+	    	while (LL_I2C_IsActiveFlag_STOP(I2C1) == 0) {}
+	
+	    	LL_I2C_ClearFlag_STOP(I2C1);
+  	}
+	return 0;
+}
+
+
 // Write function that can do multy write
 void i2c_master_write(uint8_t slave_addr, uint8_t register_addr, uint8_t *data, uint8_t len, uint8_t read_flag){
     //slave_addr - addres of the sensor
