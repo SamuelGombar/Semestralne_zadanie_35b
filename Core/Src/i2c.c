@@ -163,13 +163,31 @@ uint32_t i2c_read(uint8_t slave_address, uint8_t register_address, uint8_t numbe
 	if(number_of_registers == 0){
 		return data_recive;
 	}
-	return 0;
+
+	/* Maybe more safe option of returning the value
+	if(number_of_registers == 1){
+		data_recive_8 = data_recive;
+		return (uint32_t)data_recive_8;
+	}
+	if(number_of_registers == 2){
+		data_recive_16 = (data_recive_multy[1] << 8) | data_recive_multy[0];
+		return (uint32_t)data_recive_16;
+	}
+	if(number_of_registers == 3){
+		data_recive_32 = (data_recive_multy[2] << 16) | (data_recive_multy[1] << 8) | data_recive_multy[0];
+		return data_recive_32;
+	}
+	if(number_of_registers == 0){
+		return (uint32_t)data_recive;
+	}
+ 	*/
+
 }
 
 
 
 //Write function
-uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t* data, uint8_t number_of_registers){
+uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data, uint8_t number_of_registers){
 	//Note
 	//Write Note - cant write multiple things
 	//Write Important note - need to check and make sure to not write to reserved registers positions
@@ -182,17 +200,24 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t* dat
 	}
 
 																			//zmenene z 2
-	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, number_of_registers + 1, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+	//LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, number_of_registers + 1, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
+	//while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
+
+	LL_I2C_HandleTransfer(I2C1, slave_address, LL_I2C_ADDRSLAVE_7BIT, 2, LL_I2C_MODE_SOFTEND, LL_I2C_GENERATE_START_WRITE);
 	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
 
 	LL_I2C_TransmitData8(I2C1, register_address);
 	while (!LL_I2C_IsActiveFlag_TXIS(I2C1)) {}
 
-	//pridane viacbytove zapisovanie (moze to byt takto len v cykle?)
+	//pridane viacbytove zapisovanie (moze to byt takto len v cykle?) nope, I dont realy know
+	/*
 	for (int i = 0; i < number_of_registers; i++) {
 		LL_I2C_TransmitData8(I2C1, data[i]); //treba implementovat multiwrite (toto je pravdepodobne zle)
 		while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
 	}
+ 	*/
+	LL_I2C_TransmitData8(I2C1, data);
+	while (!LL_I2C_IsActiveFlag_TC(I2C1)) {}
 
 	LL_I2C_GenerateStopCondition(I2C1);
 	while (LL_I2C_IsActiveFlag_STOP(I2C1) == 0) {}

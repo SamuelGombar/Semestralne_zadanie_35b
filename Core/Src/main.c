@@ -27,7 +27,6 @@
 #include <math.h>
 #include <string.h>
 #include "tdtd.h"
-#include "vl53l5cx_api.h"
 
 /* USER CODE END Includes */
 
@@ -106,6 +105,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  continuous_ranging();
   while (1)
   {
     /* USER CODE END WHILE */
