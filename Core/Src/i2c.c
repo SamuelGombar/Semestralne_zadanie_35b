@@ -226,4 +226,30 @@ uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data
 
 	return 0;
 }
+
+
+// Write function that can do multy write
+void i2c_master_write(uint8_t slave_addr, uint8_t register_addr, uint8_t *data, uint8_t len, uint8_t read_flag){
+    //slave_addr - addres of the sensor
+    //register_addr - into what register to write data
+    //*data - array of data to be writen to the specified resiger addres 
+    //len - number of bytes that you want to write
+    //read_flag - *note*
+    //Note: dont know what tha flag douing but ok - best guess activates 8. bit to enable auto indexing - how tha huk the sensor know how many to expect is to be discoverede
+    if (read_flag) register_addr |= (1 << 7);        // activate PD : hts221 pg. 22
+
+    LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1 + len, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
+    LL_I2C_TransmitData8(I2C1, register_addr);
+
+    uint8_t index = 0;
+    while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {    // a Stop condition, which is the end of a communication sequence
+        if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {    // Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
+            if (index < len) {
+                LL_I2C_TransmitData8(I2C1, data[index++]);
+            }
+        }
+    }
+    LL_I2C_ClearFlag_STOP(I2C1);    // the stop condition was processed and now it is time to liberate the flag
+    return;
+}
 /* USER CODE END 1 */
