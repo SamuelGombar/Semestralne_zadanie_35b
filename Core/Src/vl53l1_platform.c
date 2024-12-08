@@ -16,6 +16,16 @@
 #include <math.h>
 #include "sensor.h"
 
+//WrWord
+//dev - addresa slave
+//index - addresa registra
+//*data je pamapť a nie array - toto zapisovať
+
+//Read
+//dev - addresa slave
+//index - addresa registra
+//*data je pamapť a nie array - tu zapisovať
+
 int8_t VL53L1_WriteMulti( uint16_t dev, uint16_t index, uint8_t *pdata, uint32_t count) {
 	return 0; // to be implemented
 }
