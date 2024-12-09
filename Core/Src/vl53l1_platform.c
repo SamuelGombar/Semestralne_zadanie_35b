@@ -37,7 +37,14 @@ int8_t VL53L1_WrDWord(uint16_t dev, uint16_t index, uint32_t data) {
 }
 
 int8_t VL53L1_RdByte(uint16_t dev, uint16_t index, uint8_t *data) {
-	return 0; // to be implemented
+	int status = 0;
+	uint8_t data_read = 0;
+	data_read = i2c_read(dev, index, 1);
+	if (data_read == 0) {
+		status = 1;
+	}
+	*data = data_read;
+	return status; // to be implemented
 }
 
 //int _I2CRead(uint16_t Dev, uint8_t *pdata, uint32_t count) {
