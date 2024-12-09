@@ -41,6 +41,11 @@ void MX_I2C1_Init(void);
 /* USER CODE BEGIN Prototypes */
 uint32_t i2c_read(uint8_t slave_address, uint8_t register_address, uint8_t number_of_registers);
 uint32_t i2c_write(uint8_t slave_address, uint8_t register_address, uint8_t data, uint8_t number_of_registers);
+
+uint32_t i2c_multy_write(uint8_t slave_address, uint8_t register_address, uint8_t *data, uint8_t number_of_registers);
+uint32_t i2c_multy_write_2(uint8_t slave_address, uint8_t *register_address, uint8_t *data, uint8_t number_of_registers);
+
+void i2c_master_write(uint8_t slave_addr, uint8_t register_addr, uint8_t *data, uint8_t len, uint8_t read_flag); // With multy write anabled
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
