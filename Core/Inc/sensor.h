@@ -10,6 +10,4 @@
 
 #define MAIN_SENSOR_ADDRESS				0x52
 
-int continuous_ranging();
-
 #endif /* INC_SENSOR_H_ */

@@ -15,6 +15,7 @@
 #include <time.h>
 #include <math.h>
 #include "sensor.h"
+#include "stm32f3xx_ll_utils.h"
 
 //WrWord
 //dev - addresa slave
@@ -36,35 +37,40 @@ void RegisterCallback_i2c_mwrite(void *callback) {
         if(callback != 0) i2c_mwrite = callback;
 }
 
-int8_t VL53L1_WriteMulti( uint16_t dev, uint16_t index, uint8_t *pdata, uint32_t count) {
-	return 0; // to be implemented
+int8_t VL53L1_WriteMulti(uint16_t dev, uint16_t index, uint8_t *pdata, uint32_t count) {
+	int8_t status = 1;
+	status = i2c_mwrite(pdata, count, index, dev);
+	return status; // to be implemented
 }
 
-int8_t VL53L1_ReadMulti(uint16_t dev, uint16_t index, uint8_t *pdata, uint32_t count){
-	return 0; // to be implemented
+int8_t VL53L1_ReadMulti(uint16_t dev, uint16_t index, uint8_t *pdata, uint32_t count) {
+	int8_t status = 1;
+	status = i2c_mread_multi(pdata, count, index, dev);
+	return status; // to be implemented
 }
 
 int8_t VL53L1_WrByte(uint16_t dev, uint16_t index, uint8_t data) {
-	return 0; // to be implemented
+	int8_t status = 1;
+	status = i2c_mwrite((uint8_t*)(&data), 1, index, dev);
+	return status; // to be implemented
 }
 
 int8_t VL53L1_WrWord(uint16_t dev, uint16_t index, uint16_t data) {
-	return 0; // to be implemented
+	int8_t status = 1;
+	status = i2c_mwrite((uint8_t*)(&data), 2, index, dev);
+	return status; // to be implemented
 }
 
 int8_t VL53L1_WrDWord(uint16_t dev, uint16_t index, uint32_t data) {
-	return 0; // to be implemented
+	int8_t status = 1;
+	status = i2c_mwrite((uint8_t*)(&data), 4, index, dev);
+	return status; // to be implemented
 }
 
 int8_t VL53L1_RdByte(uint16_t dev, uint16_t index, uint8_t *data) {
-	int status = 0;
-	uint8_t data_read = 0;
-	data_read = i2c_read(dev, index, 1);
-	if (data_read == 0) {
-		status = 1;
-	}
-	*data = data_read;
-	return status; // to be implemented
+	int8_t status = 1;
+	status = i2c_mread_single(data, index, dev);
+	return status;
 }
 
 //int _I2CRead(uint16_t Dev, uint8_t *pdata, uint32_t count) {
@@ -80,13 +86,19 @@ int8_t VL53L1_RdByte(uint16_t dev, uint16_t index, uint8_t *data) {
 //}
 
 int8_t VL53L1_RdWord(uint16_t dev, uint16_t index, uint16_t *data) {
-	return 0; // to be implemented
+	int8_t status = 1;
+
+	status = i2c_mread_multi((uint8_t*)data, 2, index, dev);
+	return status; // to be implemented
 }
 
 int8_t VL53L1_RdDWord(uint16_t dev, uint16_t index, uint32_t *data) {
-	return 0; // to be implemented
+	int8_t status = 1;
+	status = i2c_mread_multi((uint8_t*)data, 4, index, dev);
+	return status; // to be implemented
 }
 
-int8_t VL53L1_WaitMs(uint16_t dev, int32_t wait_ms){
+int8_t VL53L1_WaitMs(uint16_t dev, int32_t wait_ms) {
+	LL_mDelay(wait_ms);
 	return 0; // to be implemented
 }

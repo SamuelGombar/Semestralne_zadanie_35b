@@ -31,9 +31,9 @@ typedef struct {
 
 typedef VL53L1_Dev_t *VL53L1_DEV;
 
-static int8_t (* i2c_mread_single)(uint8_t register_addr, uint8_t slave_addr, uint8_t read_flag) = 0;
-static int8_t (* i2c_mread_multi)(uint8_t*buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr, uint8_t read_flag) = 0;
-static int8_t (* i2c_mwrite)(uint8_t *buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr, uint8_t read_flag) = 0;
+static int8_t (* i2c_mread_single)(uint8_t *pdata, uint8_t register_addr, uint8_t slave_addr) = 0;
+static int8_t (* i2c_mread_multi)(uint8_t *pdata, uint8_t len, uint8_t register_addr, uint8_t slave_addr) = 0;
+static int8_t (* i2c_mwrite)(uint8_t *pdata, uint8_t data_len, uint8_t register_addr, uint8_t slave_addr) = 0;
 
 /** @brief VL53L1_WriteMulti() definition.\n
  * To be implemented by the developer

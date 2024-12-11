@@ -21,11 +21,11 @@
 #include "i2c.h"
 
 /* USER CODE BEGIN 0 */
-uint8_t *i2c_rx_data;
-uint8_t r_index;
-uint8_t line_ready = 1;
-uint8_t multi_read;
-uint8_t i2c_rx_byte;
+uint8_t *i2c_rx_data; //buffer dat
+uint8_t r_index; //incrementovanie pri citani
+uint8_t line_ready = 1; //zatial nie je implementovany
+uint8_t multi_read;   //switch, ci jeden alebo viac bytov
+uint8_t i2c_rx_byte; //len jeden vycitany byte
 /* USER CODE END 0 */
 
 /* I2C1 init function */
@@ -64,7 +64,7 @@ void MX_I2C1_Init(void)
   I2C_InitStruct.Timing = 0x2000090E;
   I2C_InitStruct.AnalogFilter = LL_I2C_ANALOGFILTER_ENABLE;
   I2C_InitStruct.DigitalFilter = 0;
-  I2C_InitStruct.OwnAddress1 = 2;								// x: ?
+  I2C_InitStruct.OwnAddress1 = 2;
   I2C_InitStruct.TypeAcknowledge = LL_I2C_ACK;
   I2C_InitStruct.OwnAddrSize = LL_I2C_OWNADDRESS1_7BIT;
   LL_I2C_Init(I2C1, &I2C_InitStruct);
@@ -75,11 +75,13 @@ void MX_I2C1_Init(void)
 /* USER CODE BEGIN 1 */
 
 
-uint8_t i2c_master_write(uint8_t *buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr, uint8_t read_flag){
-	if (read_flag) register_addr |= (1 << 7);		// activate PD : hts221 pg. 22
-
+int8_t i2c_master_write(uint8_t *buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr) {
+	int8_t neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
+	LL_I2C_ClearFlag_STOP(I2C1);
+	LL_I2C_ClearFlag_NACK(I2C1);
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1 + len, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
 	LL_I2C_TransmitData8(I2C1, register_addr);
+	neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
 
 	uint8_t index = 0;
 	while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {	// a Stop condition, which is the end of a communication sequence
@@ -89,12 +91,14 @@ uint8_t i2c_master_write(uint8_t *buff, uint8_t len, uint8_t register_addr, uint
 	        }
 	    }
 	}
+	neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
 	LL_I2C_ClearFlag_STOP(I2C1);	// the stop condition was processed and now it is time to liberate the flag
+	neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
 	return 0;
 }
 
-uint8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t slave_addr, uint8_t read_flag){
-	if (read_flag) register_addr |= (1 << 7); 	// activate PD : hts221 pg. 22
+int8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t slave_addr) {
+	register_addr |= (1 << 7); 	// activate PD : hts221 pg. 22
 	line_ready = 0;
 	multi_read = 0;
 
@@ -127,8 +131,8 @@ uint8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t sl
 }
 
 
-uint8_t i2c_master_read_multi(uint8_t* buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr, uint8_t read_flag){
-	if (read_flag) register_addr |= (1 << 7); 	// activate PD : hts221 pg. 22
+int8_t i2c_master_read_multi(uint8_t* buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr) {
+	register_addr |= (1 << 7); 	// activate PD : hts221 pg. 22
 	r_index = 0;
 	i2c_rx_data = buff;
 	line_ready = 0;
