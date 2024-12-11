@@ -105,6 +105,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  /* START register callback */
+
+  /* END register callback */
   continuous_ranging();
   while (1)
   {

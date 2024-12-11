@@ -26,6 +26,16 @@
 //index - addresa registra
 //*data je pamapť a nie array - tu zapisovať
 
+void RegisterCallback_i2c_mread_single(void *callback) {
+        if(callback != 0) i2c_mread_single = callback;
+}
+void RegisterCallback_i2c_mread_multi(void *callback) {
+        if(callback != 0) i2c_mread_multi = callback;
+}
+void RegisterCallback_i2c_mwrite(void *callback) {
+        if(callback != 0) i2c_mwrite = callback;
+}
+
 int8_t VL53L1_WriteMulti( uint16_t dev, uint16_t index, uint8_t *pdata, uint32_t count) {
 	return 0; // to be implemented
 }
