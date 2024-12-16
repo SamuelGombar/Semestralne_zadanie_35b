@@ -69,6 +69,7 @@ void MX_I2C1_Init(void)
   I2C_InitStruct.OwnAddrSize = LL_I2C_OWNADDRESS1_7BIT;
   LL_I2C_Init(I2C1, &I2C_InitStruct);
   LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
+  LL_I2C_Enable(I2C1);
 
 }
 
@@ -107,14 +108,16 @@ int8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t sla
 
 	// Initialise communication
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
-	while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {	// a Stop condition, which is the end of a communication sequence
-		if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {	// Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
-			LL_I2C_TransmitData8(I2C1, register_addr);
-		}
-	}
-	LL_I2C_ClearFlag_STOP(I2C1);	// the stop condition was processed and now it is time to liberate the flag
+	    LL_mDelay(10);
+	    if (LL_I2C_IsActiveFlag_NACK(I2C1)) return 1;
+	    while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {    // a Stop condition, which is the end of a communication sequence
+	        if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {    // Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
+	            LL_I2C_TransmitData8(I2C1, register_addr);
+	        }
+	    }
+	    LL_I2C_ClearFlag_STOP(I2C1);    // the stop condition was processed and now it is time to liberate the flag
 
-	while (LL_I2C_IsActiveFlag_STOP(I2C1)) ;	// to ensure liberated stop flag
+	    while (LL_I2C_IsActiveFlag_STOP(I2C1)) ;    // to ensure liberated stop flag
 
 	// Receive data from slave device and read them per interrupt handler
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);

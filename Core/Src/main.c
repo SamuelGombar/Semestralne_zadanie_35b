@@ -54,6 +54,7 @@ uint16_t distance;
 uint8_t rangeStatus;
 uint8_t dataReady;
 VL53L1X_ERROR status;
+uint8_t sensorState;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,6 +116,11 @@ int main(void)
 	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
 	RegisterCallback_i2c_mwrite(i2c_master_write);
 	/* END register callback */
+	sensorState = 0;
+	while(!sensorState) {
+		status = VL53L1X_BootState(MAIN_SENSOR_ADDRESS, &sensorState);
+		LL_mDelay(2);
+	}
 	status = VL53L1X_SensorInit(MAIN_SENSOR_ADDRESS);
 	status = VL53L1X_StartRanging(MAIN_SENSOR_ADDRESS);
 	while (1)
