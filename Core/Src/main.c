@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "i2c.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -27,8 +26,8 @@
 #include <math.h>
 #include <string.h>
 #include "tdtd.h"
-#include "VL53L1X_api.h"
-#include "sensor.h"
+#include "VL53L0X.h"
+#include "i2c.h"
 
 /* USER CODE END Includes */
 
@@ -53,7 +52,6 @@
 uint16_t distance;
 uint8_t rangeStatus;
 uint8_t dataReady;
-VL53L1X_ERROR status;
 uint8_t sensorState;
 /* USER CODE END PV */
 
@@ -75,67 +73,58 @@ void SystemClock_Config(void);
 int main(void)
 {
 
-	/* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* System interrupt init*/
-	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+  /* USER CODE BEGIN Init */
 
-	/* SysTick_IRQn interrupt configuration */
-	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+  /* USER CODE END Init */
 
-	/* USER CODE BEGIN Init */
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* USER CODE END Init */
+  /* USER CODE BEGIN SysInit */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* USER CODE END SysInit */
 
-	/* USER CODE BEGIN SysInit */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_I2C1_Init();
+  /* USER CODE BEGIN 2 */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END 2 */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_I2C1_Init();
-	/* USER CODE BEGIN 2 */
-
-	/* USER CODE END 2 */
-
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	/* START register callback */
-	RegisterCallback_i2c_mread_single(i2c_master_read_single);
-	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
-	RegisterCallback_i2c_mwrite(i2c_master_write);
+//	RegisterCallback_i2c_mread_single(i2c_master_read_single);
+//	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
+//	RegisterCallback_i2c_mwrite(i2c_master_write);
 	/* END register callback */
-	sensorState = 0;
-	while(!sensorState) {
-		status = VL53L1X_BootState(MAIN_SENSOR_ADDRESS, &sensorState);
-		LL_mDelay(2);
-	}
-	status = VL53L1X_SensorInit(MAIN_SENSOR_ADDRESS);
-	status = VL53L1X_StartRanging(MAIN_SENSOR_ADDRESS);
+	statInfo_t_VL53L0X distanceStr;
+	initVL53L0X(1, &hi2c1);
+
+	// Configure the sensor for high accuracy and speed in 20 cm.
+	setSignalRateLimit(200);
+	setVcselPulsePeriod(VcselPeriodPreRange, 10);
+	setVcselPulsePeriod(VcselPeriodFinalRange, 14);
+	setMeasurementTimingBudget(300 * 1000UL);
+
+	uint16_t distance;
 	while (1)
 	{
-		/* USER CODE END WHILE */
-		while(dataReady == 0) {
-			status = VL53L1X_CheckForDataReady(MAIN_SENSOR_ADDRESS, &dataReady);
-		}
-		dataReady = 0;
-		status = VL53L1X_GetRangeStatus(MAIN_SENSOR_ADDRESS, &rangeStatus);
-		status = VL53L1X_GetDistance(MAIN_SENSOR_ADDRESS, &distance);
-		status = VL53L1X_ClearInterrupt(MAIN_SENSOR_ADDRESS);
-	/* USER CODE BEGIN 3 */
+		distance = readRangeSingleMillimeters(&distanceStr);
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
@@ -144,31 +133,41 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-  LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
-  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_0)
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
+    Error_Handler();
   }
-  LL_RCC_HSI_Enable();
 
-   /* Wait till HSI is ready */
-  while(LL_RCC_HSI_IsReady() != 1)
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
-
+    Error_Handler();
   }
-  LL_RCC_HSI_SetCalibTrimming(16);
-  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-  LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
-  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSI);
-
-   /* Wait till System clock is ready */
-  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSI)
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
-
+    Error_Handler();
   }
-  LL_Init1msTick(8000000);
-  LL_SetSystemCoreClock(8000000);
-  LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_HSI);
 }
 
 /* USER CODE BEGIN 4 */
