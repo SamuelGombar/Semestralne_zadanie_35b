@@ -28,6 +28,7 @@
 #include "tdtd.h"
 #include "VL53L0X.h"
 #include "i2c.h"
+#include "sensor.h"
 
 /* USER CODE END Includes */
 
@@ -107,19 +108,42 @@ int main(void)
 //	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
 //	RegisterCallback_i2c_mwrite(i2c_master_write);
 	/* END register callback */
-	statInfo_t_VL53L0X distanceStr;
 	initVL53L0X(1, &hi2c1);
-
-	// Configure the sensor for high accuracy and speed in 20 cm.
+	setAddress_VL53L0X(LEFT_SENSOR_ADDRESS);
 	setSignalRateLimit(200);
 	setVcselPulsePeriod(VcselPeriodPreRange, 10);
 	setVcselPulsePeriod(VcselPeriodFinalRange, 14);
 	setMeasurementTimingBudget(300 * 1000UL);
+	HAL_Delay(100);
 
-	uint16_t distance;
+	initVL53L0X(1, &hi2c1);
+	setAddress_VL53L0X(RIGHT_SENSOR_ADDRESS);
+	setSignalRateLimit(200);
+	setVcselPulsePeriod(VcselPeriodPreRange, 10);
+	setVcselPulsePeriod(VcselPeriodFinalRange, 14);
+	setMeasurementTimingBudget(300 * 1000UL);
+	HAL_Delay(100);
+
+	initVL53L0X(1, &hi2c1);
+	setSignalRateLimit(200);
+	setVcselPulsePeriod(VcselPeriodPreRange, 10);
+	setVcselPulsePeriod(VcselPeriodFinalRange, 14);
+	setMeasurementTimingBudget(300 * 1000UL);
+	HAL_Delay(100);
+
+	// Configure the sensor for high accuracy and speed in 20 cm.
+//	setSignalRateLimit(200);
+//	setVcselPulsePeriod(VcselPeriodPreRange, 10);
+//	setVcselPulsePeriod(VcselPeriodFinalRange, 14);
+//	setMeasurementTimingBudget(300 * 1000UL);
+
+	uint16_t distance_m, distance_l, distance_r;
+	statInfo_t_VL53L0X distanceStr;
 	while (1)
 	{
-		distance = readRangeSingleMillimeters(&distanceStr);
+		distance_m = readRangeSingleMillimeters(&distanceStr);
+		distance_l = readRangeSingleMillimeters(&distanceStr);
+		distance_r = readRangeSingleMillimeters(&distanceStr);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
