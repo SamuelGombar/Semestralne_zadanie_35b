@@ -111,7 +111,7 @@ void MX_I2C1_Init(void)
 	return 0;
 }*/
 
-int8_t i2c_master_write(uint8_t *pdata, uint8_t data_len, uint8_t register_addr, uint8_t slave_addr){
+int8_t i2c_master_write(uint8_t *pdata, uint8_t data_len, uint16_t register_addr, uint8_t slave_addr){
 	//if (read_flag) register_addr |= (1 << 7);		// activate PD : hts221 pg. 22
 
 	LL_I2C_HandleTransfer(I2C1, slave_addr<<1, LL_I2C_ADDRSLAVE_7BIT, 1 + data_len, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
@@ -134,7 +134,7 @@ int8_t i2c_master_write(uint8_t *pdata, uint8_t data_len, uint8_t register_addr,
 	return 0;
 }
 
-int8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t slave_addr) {
+int8_t i2c_master_read_single(uint8_t* pdata, uint16_t register_addr, uint8_t slave_addr) {
 	register_addr |= (1 << 7); 	// activate PD : hts221 pg. 22
 	line_ready = 0;
 	multi_read = 0;
@@ -174,7 +174,7 @@ int8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t sla
 }
 
 
-int8_t i2c_master_read_multi(uint8_t* buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr) {
+int8_t i2c_master_read_multi(uint8_t* buff, uint8_t len, uint16_t register_addr, uint8_t slave_addr) {
 	register_addr |= (1 << 7); 	// activate PD : hts221 pg. 22
 	r_index = 0;
 	i2c_rx_data = buff;

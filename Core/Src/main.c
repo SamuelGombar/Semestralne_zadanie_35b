@@ -27,9 +27,11 @@
 #include <math.h>
 #include <string.h>
 #include "tdtd.h"
-#include "VL53L1X_api.h"
-#include "sensor.h"
+//#include "VL53L1X_api.h"
+//#include "sensor.h"
 #include "display_lib.h"
+//#include "vl53l0x_api.h"
+#include "VL53L0X_ToF.h"
 
 /* USER CODE END Includes */
 
@@ -54,7 +56,7 @@
 uint16_t distance;
 uint8_t rangeStatus;
 uint8_t dataReady;
-VL53L1X_ERROR status;
+//VL53L1X_ERROR status;
 uint8_t sensorState;
 /* USER CODE END PV */
 
@@ -116,20 +118,20 @@ int main(void)
   	DispRegisterCallback_i2c_mread_single(i2c_master_read_single);
   	DispRegisterCallback_i2c_mread_multi(i2c_master_read_multi);
   	DispRegisterCallback_i2c_mwrite(i2c_master_write);
-	RegisterCallback_i2c_mread_single(i2c_master_read_single);
+	/*RegisterCallback_i2c_mread_single(i2c_master_read_single);
 	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
-	RegisterCallback_i2c_mwrite(i2c_master_write);
+	RegisterCallback_i2c_mwrite(i2c_master_write);*/
 
 	display_init();
 
 	/* END register callback */
-	sensorState = 0;
+	/*sensorState = 0;
 	while(!sensorState) {
 		status = VL53L1X_BootState(MAIN_SENSOR_ADDRESS, &sensorState);
 		LL_mDelay(2);
 	}
 	status = VL53L1X_SensorInit(MAIN_SENSOR_ADDRESS);
-	status = VL53L1X_StartRanging(MAIN_SENSOR_ADDRESS);
+	status = VL53L1X_StartRanging(MAIN_SENSOR_ADDRESS);*/
 	while (1)
 	{
     /* USER CODE END WHILE */

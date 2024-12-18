@@ -53,6 +53,7 @@
 	void DispRegisterCallback_i2c_mread_multi(void *callback);
 	void DispRegisterCallback_i2c_mwrite(void *callback);
 
+	int8_t display_init();
 	int8_t display_strongLeft();
 	int8_t display_weakLeft();
 	int8_t display_forward();

@@ -22,6 +22,9 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#define FALSE 0
+#define TRUE 1
+
 #ifdef __cplusplus
 extern "C" {
 #endif

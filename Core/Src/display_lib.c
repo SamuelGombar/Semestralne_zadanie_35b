@@ -25,7 +25,6 @@ void DispRegisterCallback_i2c_mwrite(void *callback) {
 
 int8_t display_init(){
 	int8_t status = 1;
-	uint16_t Gama = 0;
 
 	while (status == 1){
 		status = 0;
