@@ -183,6 +183,9 @@ VL53L1X_ERROR VL53L1X_SensorInit(uint16_t dev)
 	for (Addr = 0x2D; Addr <= 0x87; Addr++){
 		status |= VL53L1_WrByte(dev, Addr, VL51L1X_DEFAULT_CONFIGURATION[Addr - 0x2D]);
 	}
+
+
+	status |= VL53L1X_SetInterruptPolarity(dev, 0);
 	status |= VL53L1X_StartRanging(dev);
 	tmp  = 0;
 	while(tmp==0){

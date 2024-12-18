@@ -1,22 +1,22 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * File Name          : I2C.c
-  * Description        : This file provides code for the configuration
-  *                      of the I2C instances.
+  * @file    i2c.c
+  * @brief   This file provides code for the configuration
+  *          of the I2C instances.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
-
+/* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "i2c.h"
 
@@ -31,6 +31,11 @@ uint8_t i2c_rx_byte; //len jeden vycitany byte
 /* I2C1 init function */
 void MX_I2C1_Init(void)
 {
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
   LL_I2C_InitTypeDef I2C_InitStruct = {0};
 
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -44,7 +49,7 @@ void MX_I2C1_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO; // was  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
   LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -55,7 +60,12 @@ void MX_I2C1_Init(void)
   NVIC_SetPriority(I2C1_EV_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
   NVIC_EnableIRQ(I2C1_EV_IRQn);
 
-  /** I2C Initialization */
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+
+  /** I2C Initialization
+  */
   LL_I2C_EnableAutoEndMode(I2C1);
   LL_I2C_DisableOwnAddress2(I2C1);
   LL_I2C_DisableGeneralCall(I2C1);
@@ -69,20 +79,24 @@ void MX_I2C1_Init(void)
   I2C_InitStruct.OwnAddrSize = LL_I2C_OWNADDRESS1_7BIT;
   LL_I2C_Init(I2C1, &I2C_InitStruct);
   LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
-  LL_I2C_Enable(I2C1);
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
 
 }
 
 /* USER CODE BEGIN 1 */
 
 
-int8_t i2c_master_write(uint8_t *buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr) {
-	int8_t neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
-	LL_I2C_ClearFlag_STOP(I2C1);
-	LL_I2C_ClearFlag_NACK(I2C1);
+/*int8_t i2c_master_write(uint8_t *buff, uint8_t len, uint8_t register_addr, uint8_t slave_addr) {
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1 + len, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
+	LL_mDelay(10);
+	if (LL_I2C_IsActiveFlag_NACK(I2C1)) {
+		LL_I2C_ClearFlag_NACK(I2C1);
+		LL_I2C_ClearFlag_STOP(I2C1);
+		return 1;
+	}
 	LL_I2C_TransmitData8(I2C1, register_addr);
-	neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
 
 	uint8_t index = 0;
 	while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {	// a Stop condition, which is the end of a communication sequence
@@ -92,9 +106,31 @@ int8_t i2c_master_write(uint8_t *buff, uint8_t len, uint8_t register_addr, uint8
 	        }
 	    }
 	}
-	neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
+
 	LL_I2C_ClearFlag_STOP(I2C1);	// the stop condition was processed and now it is time to liberate the flag
-	neviem = !LL_I2C_IsActiveFlag_STOP(I2C1);
+	return 0;
+}*/
+
+int8_t i2c_master_write(uint8_t *pdata, uint8_t data_len, uint8_t register_addr, uint8_t slave_addr){
+	//if (read_flag) register_addr |= (1 << 7);		// activate PD : hts221 pg. 22
+
+	LL_I2C_HandleTransfer(I2C1, slave_addr<<1, LL_I2C_ADDRSLAVE_7BIT, 1 + data_len, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
+	LL_I2C_TransmitData8(I2C1, register_addr);
+
+	uint8_t index = 0;
+	while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {	// a Stop condition, which is the end of a communication sequence
+	    if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {	// Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
+	        if (index < data_len) {
+	            LL_I2C_TransmitData8(I2C1, pdata[index++]);
+	        }
+	    }
+	}
+	if (LL_I2C_IsActiveFlag_NACK(I2C1)){
+			LL_I2C_ClearFlag_STOP(I2C1);
+			LL_I2C_ClearFlag_NACK(I2C1);
+			return 1;
+		}
+	LL_I2C_ClearFlag_STOP(I2C1);	// the stop condition was processed and now it is time to liberate the flag
 	return 0;
 }
 
@@ -108,16 +144,20 @@ int8_t i2c_master_read_single(uint8_t* pdata, uint8_t register_addr, uint8_t sla
 
 	// Initialise communication
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
-	    LL_mDelay(10);
-	    if (LL_I2C_IsActiveFlag_NACK(I2C1)) return 1;
-	    while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {    // a Stop condition, which is the end of a communication sequence
-	        if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {    // Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
-	            LL_I2C_TransmitData8(I2C1, register_addr);
-	        }
-	    }
-	    LL_I2C_ClearFlag_STOP(I2C1);    // the stop condition was processed and now it is time to liberate the flag
+	LL_mDelay(10);
+	if (LL_I2C_IsActiveFlag_NACK(I2C1)) {
+		LL_I2C_ClearFlag_NACK(I2C1);
+		LL_I2C_ClearFlag_STOP(I2C1);
+		return 1;
+	}
+	while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {    // a Stop condition, which is the end of a communication sequence
+		if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {    // Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
+			LL_I2C_TransmitData8(I2C1, register_addr);
+		}
+	}
+	LL_I2C_ClearFlag_STOP(I2C1);    // the stop condition was processed and now it is time to liberate the flag
 
-	    while (LL_I2C_IsActiveFlag_STOP(I2C1)) ;    // to ensure liberated stop flag
+	while (LL_I2C_IsActiveFlag_STOP(I2C1)) ;    // to ensure liberated stop flag
 
 	// Receive data from slave device and read them per interrupt handler
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_READ);
@@ -146,6 +186,12 @@ int8_t i2c_master_read_multi(uint8_t* buff, uint8_t len, uint8_t register_addr, 
 
 	// Initialise communication
 	LL_I2C_HandleTransfer(I2C1, slave_addr, LL_I2C_ADDRSLAVE_7BIT, 1, LL_I2C_MODE_AUTOEND, LL_I2C_GENERATE_START_WRITE);
+	LL_mDelay(10);
+	if (LL_I2C_IsActiveFlag_NACK(I2C1)) {
+		LL_I2C_ClearFlag_NACK(I2C1);
+		LL_I2C_ClearFlag_STOP(I2C1);
+		return 1;
+	}
 	while (!LL_I2C_IsActiveFlag_STOP(I2C1)) {	// a Stop condition, which is the end of a communication sequence
 		if (LL_I2C_IsActiveFlag_TXIS(I2C1)) {	// Transmit Interrupt Status (TXIS) flag indicates that the data register is empty and ready for the next byte of data to be transmitted
 			LL_I2C_TransmitData8(I2C1, register_addr);
@@ -186,5 +232,3 @@ void I2C1_EV_IRQHandler(void){
     }
 }
 /* USER CODE END 1 */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

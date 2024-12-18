@@ -29,6 +29,7 @@
 #include "tdtd.h"
 #include "VL53L1X_api.h"
 #include "sensor.h"
+#include "display_lib.h"
 
 /* USER CODE END Includes */
 
@@ -75,46 +76,53 @@ void SystemClock_Config(void);
 int main(void)
 {
 
-	/* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
 
-	/* System interrupt init*/
-	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+  /* System interrupt init*/
+  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
-	/* SysTick_IRQn interrupt configuration */
-	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+  /* SysTick_IRQn interrupt configuration */
+  NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
 
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_I2C1_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_I2C1_Init();
+  /* USER CODE BEGIN 2 */
 
-	/* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	/* START register callback */
+  	DispRegisterCallback_i2c_mread_single(i2c_master_read_single);
+  	DispRegisterCallback_i2c_mread_multi(i2c_master_read_multi);
+  	DispRegisterCallback_i2c_mwrite(i2c_master_write);
 	RegisterCallback_i2c_mread_single(i2c_master_read_single);
 	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
 	RegisterCallback_i2c_mwrite(i2c_master_write);
+
+	int8_t xy = display_init();
+	display_strongLeft();
+
 	/* END register callback */
 	sensorState = 0;
 	while(!sensorState) {
@@ -125,17 +133,11 @@ int main(void)
 	status = VL53L1X_StartRanging(MAIN_SENSOR_ADDRESS);
 	while (1)
 	{
-		/* USER CODE END WHILE */
-		while(dataReady == 0) {
-			status = VL53L1X_CheckForDataReady(MAIN_SENSOR_ADDRESS, &dataReady);
-		}
-		dataReady = 0;
-		status = VL53L1X_GetRangeStatus(MAIN_SENSOR_ADDRESS, &rangeStatus);
-		status = VL53L1X_GetDistance(MAIN_SENSOR_ADDRESS, &distance);
-		status = VL53L1X_ClearInterrupt(MAIN_SENSOR_ADDRESS);
-	/* USER CODE BEGIN 3 */
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
