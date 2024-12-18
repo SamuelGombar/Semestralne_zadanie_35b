@@ -8,7 +8,7 @@
 #ifndef INC_DECISION_H_
 #define INC_DECISION_H_
 
-uint8_t decisionLogic();
-uint8_t decisionLogicWIP(float distances[3][4], uint8_t num_sensors);
+uint8_t decisionLogicTesting();
+uint8_t decisionLogic(float distances[3][4]);
 
 #endif /* INC_DECISION_H_ */

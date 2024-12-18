@@ -141,7 +141,7 @@ int main(void)
 		//Backward 		- 3
 		//Right 		- 4
 		//Strong Right 	- 5
-		switch(decision()){
+		switch(decisionLogicTesting()){
 		case(0):display_forward();
 		case(1):display_strongLeft();
 		case(2):display_weakLeft();
