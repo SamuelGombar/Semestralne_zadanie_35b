@@ -120,8 +120,7 @@ int main(void)
 	RegisterCallback_i2c_mread_multi(i2c_master_read_multi);
 	RegisterCallback_i2c_mwrite(i2c_master_write);
 
-	int8_t xy = display_init();
-	display_strongLeft();
+	display_init();
 
 	/* END register callback */
 	sensorState = 0;

@@ -29,23 +29,10 @@ int8_t display_init(){
 
 	while (status == 1){
 		status = 0;
-		//status |= DISP_RdWord(EXPANDER1_ADD, GPDR_REG, &Gama);
 		status |= DISP_WrWord(EXPANDER1_ADD, GPDR_REG, 0xFFFF);
-		//status |= DISP_RdWord(EXPANDER1_ADD, GPDR_REG, &Gama);
-		//status |= DISP_RdWord(EXPANDER1_ADD, GPSR_REG, &Gama);
-		status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFF);
-		//status |= DISP_RdWord(EXPANDER1_ADD, GPSR_REG, &Gama);
-		status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0x0000);
-		//status |= DISP_RdWord(EXPANDER1_ADD, GPSR_REG, &Gama);
-
-		//status |= DISP_RdWord(EXPANDER2_ADD, GPDR_REG, &Gama);
+		status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFDFB);
 		status |= DISP_WrWord(EXPANDER2_ADD, GPDR_REG, 0xFFFF);
-		//status |= DISP_RdWord(EXPANDER2_ADD, GPDR_REG, &Gama);
-		//status |= DISP_RdWord(EXPANDER2_ADD, GPSR_REG, &Gama);
-		status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFF);
-		//status |= DISP_RdWord(EXPANDER2_ADD, GPSR_REG, &Gama);
-		status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0x0000);
-		//status |= DISP_RdWord(EXPANDER2_ADD, GPSR_REG, &Gama);
+		status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFDFB);
 
 	}
 	return status;
@@ -54,9 +41,43 @@ int8_t display_init(){
 
 int8_t display_strongLeft(){
 	int8_t status = 0;
-	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFDFB); // right 2 digits
 	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFDE0); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFDFB); // right 2 digits
+	return status;
+}
 
+int8_t display_weakLeft(){
+	int8_t status = 0;
+	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xF07F); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFFFB); // right 2 digits
+	return status;
+}
+
+int8_t display_forward(){
+	int8_t status = 0;
+	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xC1FB); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFDE0); // right 2 digits
+	return status;
+}
+
+int8_t display_backward(){
+	int8_t status = 0;
+	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFDE0); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xC1FB); // right 2 digits
+	return status;
+}
+
+int8_t display_weakRight(){
+	int8_t status = 0;
+	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFDFF); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFF83); // right 2 digits
+	return status;
+}
+
+int8_t display_strongRight(){
+	int8_t status = 0;
+	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFDFB); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xC1FB); // right 2 digits
 	return status;
 }
 

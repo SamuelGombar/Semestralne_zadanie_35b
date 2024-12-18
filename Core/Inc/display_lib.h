@@ -54,6 +54,11 @@
 	void DispRegisterCallback_i2c_mwrite(void *callback);
 
 	int8_t display_strongLeft();
+	int8_t display_weakLeft();
+	int8_t display_forward();
+	int8_t display_backward();
+	int8_t display_weakRight();
+	int8_t display_strongRight();
 
 	int8_t DISP_WriteMulti(
 			uint8_t 	  dev,
