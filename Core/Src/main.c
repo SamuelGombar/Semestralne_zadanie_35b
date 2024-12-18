@@ -30,6 +30,7 @@
 #include "VL53L1X_api.h"
 #include "sensor.h"
 #include "display_lib.h"
+#include "decision.h"
 
 /* USER CODE END Includes */
 
@@ -56,6 +57,7 @@ uint8_t rangeStatus;
 uint8_t dataReady;
 VL53L1X_ERROR status;
 uint8_t sensorState;
+uint8_t decisionError=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -133,7 +135,21 @@ int main(void)
 	while (1)
 	{
     /* USER CODE END WHILE */
-
+		//Forward 		- 0
+		//Strong Left 	- 1
+		//Left 			- 2
+		//Backward 		- 3
+		//Right 		- 4
+		//Strong Right 	- 5
+		switch(decision()){
+		case(0):display_forward();
+		case(1):display_strongLeft();
+		case(2):display_weakLeft();
+		case(3):display_backward();
+		case(4):display_weakRight();
+		case(5):display_strongRight();
+		default: decisionError=1;
+		}
     /* USER CODE BEGIN 3 */
 	}
   /* USER CODE END 3 */
