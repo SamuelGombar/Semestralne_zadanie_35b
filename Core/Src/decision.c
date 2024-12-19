@@ -81,7 +81,7 @@ uint8_t decisionLogic(float distances[3][4]) {
     }
 
     // Initialize decision values
-    float low_distance = 2.0f / max_range;
+    float low_distance = 2.4f / max_range;
     float leftStrong_value = 0.0f;
     float left_value = 0.0f;
     float forward_value = 0.0f;
@@ -93,13 +93,19 @@ uint8_t decisionLogic(float distances[3][4]) {
         float inputF = x[i];
         float foutput = 0.0f;
 
+        //Gain function
+        float lowGain=1.2f;
+        float functionSlope=0.7f;
+        float functionCorrection=1.3f;
+        //*(-sqrt(powf(y[i]-lowGain*low_distance, 2.0f))/functionSlope -y[i]/functionSlope +functionCorrection);
+
         // Strong Left
         float leftDistance = 1.5f;
         float functionAngleRising = 0.75f;
         float functionCut = 0.75f;
         foutput = ((sqrtf(powf(inputF + leftDistance, 2.0f)) / functionAngleRising - inputF / functionAngleRising - leftDistance / functionAngleRising) -
                   (sqrtf(powf(inputF + leftDistance + functionCut, 2.0f)) / functionAngleRising - inputF / functionAngleRising - (leftDistance + functionCut) / functionAngleRising));
-        leftStrong_value += y[i] * foutput;
+        leftStrong_value += y[i] * foutput*(-sqrt(powf(y[i]-lowGain*low_distance, 2.0f))/functionSlope -y[i]/functionSlope +functionCorrection);
 
         // Strong Left Secondary
         /*
@@ -120,7 +126,7 @@ uint8_t decisionLogic(float distances[3][4]) {
         float functionStart = 0.5f;
         foutput = sqrtf(powf(inputF + functionStart, 2.0f)) / functionAngleRising - (inputF - functionStart) / functionAngleRising - functionLevel -
                   (sqrtf(powf(inputF + 2.0f, 2.0f)) / functionAngleRising - (inputF - 2.0f) / functionAngleRising - 2.0f);
-        left_value += y[i] * foutput;
+        left_value += y[i] * foutput*(-sqrt(powf(y[i]-lowGain*low_distance, 2.0f))/functionSlope -y[i]/functionSlope +functionCorrection);
 
         // Middle
         inputF = x[i];
@@ -130,7 +136,7 @@ uint8_t decisionLogic(float distances[3][4]) {
             foutput = 0.0f;
         }
         if ((y[i] - low_distance) < 0.0f) {
-            forward_value += (y[i] - low_distance) * -foutput;
+            forward_value += (y[i] - low_distance) * -foutput*(-sqrt(powf(y[i]-lowGain*low_distance, 2.0f))/functionSlope -y[i]/functionSlope +functionCorrection);
         }
 
         // Right
@@ -141,14 +147,14 @@ uint8_t decisionLogic(float distances[3][4]) {
         functionStart = 0.5f;
         foutput = sqrtf(powf(-inputF + functionStart, 2.0f)) / functionAngleRising - (-inputF - functionStart) / functionAngleRising - functionLevel -
                   (sqrtf(powf(-inputF + 2.0f, 2.0f)) / functionAngleRising - (-inputF - 2.0f) / functionAngleRising - 2.0f);
-        right_value += y[i] * foutput;
+        right_value += y[i] * foutput*(-sqrt(powf(y[i]-lowGain*low_distance, 2.0f))/functionSlope -y[i]/functionSlope +functionCorrection);
 
         // Strong Right
         inputF = x[i];
         foutput = 0.0f;
         foutput = ((sqrtf(powf(-inputF + leftDistance, 2.0f)) / functionAngleRising + inputF / functionAngleRising - leftDistance / functionAngleRising) -
                   (sqrtf(powf(-inputF + leftDistance + functionCut, 2.0f)) / functionAngleRising + inputF / functionAngleRising - (leftDistance + functionCut) / functionAngleRising));
-        rightStrong_value += y[i] * foutput;
+        rightStrong_value += y[i] * foutput*(-sqrt(powf(y[i]-lowGain*low_distance, 2.0f))/functionSlope -y[i]/functionSlope +functionCorrection);
 
         // Strong Right Secondary
         /*
@@ -175,9 +181,12 @@ uint8_t decisionLogic(float distances[3][4]) {
         } else {
             defaultCom++;
         }
+        if (command_values(2)< (command_values(4)+0.025f) && command_values(2)> (command_values(4)-0.025f) && command_values(2)>command_values(3)){
+        	defaultCom++;
+        }
     }
 
-    if (defaultCom == 5) {
+    if (defaultCom >= 5) {
         decision = 0;
     }
 
