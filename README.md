@@ -17,7 +17,7 @@ Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude v
 
 ## Použitý hardware
 - sedem-segmentový displej
-- tri viac-segmentové laserové diaľkomery
+- tri laserové diaľkomery
 - mikrokontrolér STM32F303
 - podkladová doska
 - káble
