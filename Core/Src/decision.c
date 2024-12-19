@@ -6,6 +6,7 @@
  */
 #include "stdint.h"
 #include "math.h"
+#include "stm32f3xx_ll_utils.h"
 
 uint8_t decision=0;
 uint8_t max_range = 10;
@@ -181,7 +182,7 @@ uint8_t decisionLogic(float distances[3][4]) {
         } else {
             defaultCom++;
         }
-        if (command_values(2)< (command_values(4)+0.025f) && command_values(2)> (command_values(4)-0.025f) && command_values(2)>command_values(3)){
+        if (command_values[2]< (command_values[4]+0.025f) && command_values[2]> (command_values[4]-0.025f) && command_values[2]>command_values[3]){
         	defaultCom++;
         }
     }

@@ -65,6 +65,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
+void tester_rotation();
 
 /* USER CODE BEGIN EFP */
 

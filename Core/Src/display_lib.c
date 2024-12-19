@@ -81,6 +81,13 @@ int8_t display_strongRight(){
 	return status;
 }
 
+int8_t display_none(){
+	int8_t status = 0;
+	status |= DISP_WrWord(EXPANDER2_ADD, GPSR_REG, 0xFDFB); // left 2 digits
+	status |= DISP_WrWord(EXPANDER1_ADD, GPSR_REG, 0xFDFB); // right 2 digits
+	return status;
+}
+
 
 
 

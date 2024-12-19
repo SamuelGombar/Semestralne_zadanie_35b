@@ -10,8 +10,8 @@
 #ifndef TDTD_H_INCLUDED
     #define TDTD_H_INCLUDED
 
-    #define DIST_LONG               1200
-    #define DIST_SHORT               400
+    #define DIST_LONG               120
+    #define DIST_SHORT               40
 
     #define NO_WORRY                   0
     #define LEFT_VAL_PANIC      (1 << 5)
