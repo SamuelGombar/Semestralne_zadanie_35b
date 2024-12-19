@@ -33,6 +33,9 @@ Tento návrh bude následne zobrazený na 7-segmentovom displeji, pričom bude v
 
 ![MainLogicDiagram drawio](https://github.com/user-attachments/assets/3bac6d6b-7465-4ebd-8832-9660a513969b)
 
+## Riešenie
+Pre čítanie dát zo senzora používame knižnicu HAL, ktorá prečíta bod z daného senzora a potom danú hodnotu ukladá do premmennej, ktorú neskôr používame v rozhodovacom algoritme na určovanie požadovaného otočenia. Taktiež máme vytvorené riešenie pre spracovanie dát s použitím LL knižníc aby bolo možné dáta vypisovať na display taktiež pomocou LL knižníc, kde zapisovanie dát funguje ale čítanie dát zo senzora je problémové.
 
+Na display sa vypisujú znaky z tabuľky vyššie, ktoré naznačujú, pod ktorým uhlom smerujú prekážky. Na display sme pripojený pomocou I2C cez LL knižnicu, ktorá komunikuje s čipom STMPE1600. Tento čip funguje ako GPIO expander, kde jeden pin má vstupný a 16 pinov je výstupných. Display je pripojený k SDA a SCL, a pomocoudaného čipu, je možné vypisovať dáta na display. Na čip je nutné posielať binárny kód, ktorý určuje, ktorý segment bude páve svietiť. 
 
 #monkey
